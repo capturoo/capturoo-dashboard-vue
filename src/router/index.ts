@@ -44,6 +44,11 @@ const routes: Array<RouteConfig> = [
     path: '/webhooks/:webhookId',
     name: 'view-webhook',
     component: () => import(/* webpackChunkName: "view-webhook" */ '../views/webhooks/ViewWebhook.vue')
+  },
+  {
+    path: '/account-settings',
+    name: 'account-settings',
+    component: () => import(/* webpackChunkName: "account-settings" */ '../views/account/AccountSettings.vue')
   }
 ]
 

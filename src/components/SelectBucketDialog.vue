@@ -1,14 +1,35 @@
 <template>
 <div>
   <v-btn text @click.stop="dialog = true" class="ml-4">
-        <v-icon>mdi-bucket-outline</v-icon>
-        <span class="text-capitalize pl-1 pr-1">{{ bucketName }}</span>
-        <v-icon large>mdi-menu-down</v-icon>
-    </v-btn>
+    <v-icon>mdi-bucket-outline</v-icon>
+    <span class="text-capitalize pl-1 pr-1">{{ bucketName }}</span>
+    <v-icon large>mdi-menu-down</v-icon>
+  </v-btn>
 
   <v-row justify="center">
     <v-dialog v-model="dialog" max-width="900px">
-      <v-card>
+
+      <v-card v-show="!loaded" class="text-center" justify="center" height="300px">
+        <v-card-text>
+          <v-container fill-height fluid>
+                  <v-row align="center"
+      justify="center">
+      <v-col>
+
+        <v-progress-circular
+                    :size="70"
+                    :width="3"
+                    color="primary"
+                    indeterminate
+                  ></v-progress-circular>
+      </v-col>
+  </v-row>
+          </v-container>
+
+        </v-card-text>
+      </v-card>
+
+      <v-card v-show="loaded">
         <v-card-title>Select a bucket</v-card-title>
         <v-card-text>
           <v-simple-table height="300px">
@@ -47,7 +68,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            @click="dialog = false"
+            @click="cancel"
             text>Cancel</v-btn>
           <v-btn
             @click="selectBucket"
@@ -68,6 +89,7 @@ export default {
   },
   data () {
     return {
+      loaded: false,
       disabled: true,
       dialog: false,
       selectedRow: '',
@@ -86,10 +108,20 @@ export default {
       ]
     }
   },
+  beforeUpdate() {
+    setTimeout(() => {
+      console.log('loaded')
+      this.loaded = true
+    }, 2000)
+  },
   methods: {
     rowClicked(row) {
       this.selectedRow = row
       this.disabled = false
+    },
+    cancel() {
+      this.dialog = false
+      this.disabled = true
     },
     selectBucket() {
       this.$emit('selected', {

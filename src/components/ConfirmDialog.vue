@@ -25,16 +25,12 @@
             text
             color="primary"
             @click="dialog = false"
-          >
-            {{ cancel }}
-          </v-btn>
+          >{{ cancel }}</v-btn>
           <v-btn
             text
             color="primary"
             @click="actionSubmit"
-          >
-            {{ action }}
-          </v-btn>
+          >{{ action }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -59,7 +55,6 @@
       actionSubmit() {
         this.$emit('confirm', this.id)
         this.dialog = false
-
       }
     }
   }
