@@ -4,20 +4,19 @@
       @click.stop="dialog = true"
       color="primary"
       dark
-    >
-      mdi-delete
-    </v-icon>
+    >{{ icon }}</v-icon>
 
     <v-dialog
       v-model="dialog"
       max-width="500"
     >
       <v-card>
-        <v-card-title class="headline">Delete bucket?</v-card-title>
+        <v-card-title class="headline">
+          {{ title }}
+        </v-card-title>
 
         <v-card-text>
-          <p>You cannot undo this action.</p>
-          <p>Do you want to delete {{ resourceName }}?</p>
+          <slot name="content"></slot>
         </v-card-text>
 
         <v-card-actions>
@@ -27,14 +26,14 @@
             color="primary"
             @click="dialog = false"
           >
-            Cancel
+            {{ cancel }}
           </v-btn>
           <v-btn
             text
             color="primary"
-            @click="dialog = false"
+            @click="actionSubmit"
           >
-            Delete
+            {{ action }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -45,11 +44,22 @@
 <script>
   export default {
     props: {
-      'resource-name': String
+      'icon': String,
+      'id': String,
+      'cancel': String,
+      'action': String,
+      'title': String
     },
     data () {
       return {
         dialog: false
+      }
+    },
+    methods: {
+      actionSubmit() {
+        this.$emit('confirm', this.id)
+        this.dialog = false
+
       }
     }
   }

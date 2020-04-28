@@ -13,7 +13,7 @@ const routes: Array<RouteConfig> = [
   {
     path: '/buckets',
     name: 'buckets-overview',
-    component: () => import(/* webpackChunkName: "buckets" */ '../views/buckets/Buckets.vue')
+    component: () => import(/* webpackChunkName: "bucket" */ '../views/buckets/Buckets.vue')
   },
   {
     path: '/buckets/create',
@@ -23,7 +23,27 @@ const routes: Array<RouteConfig> = [
   {
     path: '/buckets/:bucketId',
     name: 'view-bucket',
-    component: () => import(/* webpackChunkName: "view-bucket" */ '../views/buckets/BucketDetails.vue')
+    component: () => import(/* webpackChunkName: "view-bucket" */ '@/views/buckets/BucketDetails.vue')
+  },
+  {
+    path: '/webhooks',
+    name: 'webhooks-overview',
+    component: () => import(/* webpackChunkName: "webhooks-overview" */ '@/views/webhooks/WebhooksOverview.vue')
+  },
+  {
+    path: '/webhooks/create',
+    name: 'create-webhook',
+    component: () => import(/* webpackChunkName: "create-webhook" */ '@/views/webhooks/CreateWebhook.vue')
+  },
+  {
+    path: '/webhooks/:webhookId',
+    name: 'edit-webhook',
+    component: () => import(/* webpackChunkName: "edit-webhook" */ '@/views/webhooks/EditWebhook.vue')
+  },
+  {
+    path: '/webhooks/:webhookId',
+    name: 'view-webhook',
+    component: () => import(/* webpackChunkName: "view-webhook" */ '../views/webhooks/ViewWebhook.vue')
   }
 ]
 

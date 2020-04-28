@@ -10,6 +10,11 @@
         <span>Capturoo</span>
       </v-toolbar-title>
 
+      <c-select-bucket-dialog
+        @selected="selectedBucket"
+        bucket-name="My Bucket Name"
+      ></c-select-bucket-dialog>
+
       <v-spacer></v-spacer>
 
       <v-btn text color="grey">
@@ -41,15 +46,24 @@
 </template>
 
 <script>
+import SelectBucketDialog from './SelectBucketDialog.vue'
+
 export default {
+  components: {
+    'c-select-bucket-dialog': SelectBucketDialog
+  },
   data() {
     return {
       drawer: true,
       links: [
         { icon: 'mdi-bucket-outline', text: 'Buckets', route: { name: 'buckets-overview' } },
-        { icon: 'mdi-folder', text: 'My Projects', route: { name: 'home' } },
-        { icon: 'mdi-account', text: 'Team', route: { name: 'home' } }
+        { icon: 'mdi-webhook', text: 'Webhooks', route: { name: 'webhooks-overview' } }
       ]
+    }
+  },
+  methods: {
+    selectedBucket(bucket) {
+      console.dir(bucket)
     }
   }
 }

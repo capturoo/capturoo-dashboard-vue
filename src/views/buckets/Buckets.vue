@@ -51,7 +51,19 @@
               <td>{{ bucket.created }}</td>
               <td>{{ bucket.modified }}</td>
               <td>
-                <delete-bucket-dialog :resource-name="bucket.resourceName"></delete-bucket-dialog>
+                <c-confirm-dialog
+                  :id="bucket.resourceName"
+                  icon="mdi-delete"
+                  @confirm="deleteConfirm"
+                  cancel="Cancel"
+                  action="Delete"
+                  title="Delete bucket?"
+                >
+                  <template v-slot:content>
+                    <p>You cannot undo this action.</p>
+                    <p>Do you want to delete {{ bucket.resourceName }}?</p>
+                  </template>
+                </c-confirm-dialog>
               </td>
             </tr>
           </tbody>
@@ -62,11 +74,11 @@
 </template>
 
 <script>
-import DeleteBucketDialog from './DeleteBucketDialog.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 export default {
   components: {
-    'delete-bucket-dialog': DeleteBucketDialog
+    'c-confirm-dialog': ConfirmDialog
   },
   data() {
     return {
@@ -74,6 +86,11 @@ export default {
         { resourceName: '89233482:woofy', name: 'Woofy Woofy Project', publicApiKey: 'e46FGb1A', status: 'online', created: '2020-04-13 09:40:55.29 +0000 UTC', modified: '2020-04-15 10:45:47.952 +0000 UTC' },
         { resourceName: '89233482:skincare', name: 'My skincare campaign', publicApiKey: 'ObGsEG4x', status: 'locked', created: '2020-04-13 11:04:23.682 +0000 UTC', modified: '2020-04-13 11:04:23.682 +0000 UTC' }
       ]
+    }
+  },
+  methods: {
+    deleteConfirm(id) {
+      console.log(`delete ${id} confirm`)
     }
   }
 }
