@@ -17,7 +17,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn text color="grey">
+      <v-btn @click="signOut" text color="grey">
         <span>Sign Out</span>
         <v-icon right>mdi-exit-to-app</v-icon>
       </v-btn>
@@ -65,6 +65,14 @@ export default {
   methods: {
     selectedBucket(bucket) {
       console.dir(bucket)
+    },
+    async signOut() {
+      try {
+        await this.$store.dispatch('signOut')
+        await this.$router.replace({ name: 'signin' })
+      } catch (err) {
+        console.err(err)
+      }
     }
   }
 }

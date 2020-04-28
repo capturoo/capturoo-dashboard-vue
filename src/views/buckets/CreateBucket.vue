@@ -55,18 +55,18 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   data: () => ({
     loading: false,
     disabled: false,
     bucketCode: '',
     bucketCodeRules: [
-      v => !!v || 'Bucket code is required'
+      (v: string) => !!v || 'Bucket code is required'
     ],
     bucketName: '',
     bucketNameRules: [
-      v => !!v || 'Bucket name is required'
+      (v: string) => !!v || 'Bucket name is required'
     ]
   }),
   methods: {

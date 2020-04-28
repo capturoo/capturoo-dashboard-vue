@@ -46,7 +46,7 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       tab: null
     }
