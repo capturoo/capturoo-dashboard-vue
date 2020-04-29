@@ -1,4 +1,11 @@
 steps:
+# Kaniko cache (optmisation)
+- name: 'gcr.io/kaniko-project/executor:latest'
+  args:
+  - --destination=gcr.io/$PROJECT_ID/image
+  - --cache=true
+  - --cache-ttl=12h
+
 # Install
 - name: 'node:12.16.3'
   entrypoint: npm
