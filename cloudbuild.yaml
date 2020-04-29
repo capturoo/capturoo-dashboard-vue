@@ -1,12 +1,21 @@
 steps:
 # Install
-- name: 'gcr.io/cloud-builders/npm'
-  args: ['install']
+- name: 'node:12.16.3'
+  entrypoint: npm
+  args: [ 'install' ]
+
+# Inject config
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - 'gcloud secrets versions access latest --project=$PROJECT_ID --secret=firebase-config > config.js'
 
 # Build
-- name: 'gcr.io/cloud-builders/npm'
-  args: ['run', 'build']
+- name: 'node:12.16.3'
+  entrypoint: npm
+  args: [ 'run', 'build' ]
 
 # Deploy
 - name: 'gcr.io/$PROJECT_ID/firebase'
-  args: ['deploy']
+  args: [ 'deploy', '--project=$PROJECT_ID', '--only-hosting' ]
