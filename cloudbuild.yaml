@@ -1,0 +1,12 @@
+steps:
+# Install
+- name: 'gcr.io/cloud-builders/npm'
+  arg: ['install']
+
+# Build
+- name: 'gcr.io/cloud-builders/npm'
+  arg: ['run', 'build']
+
+# Deploy
+- name: 'gcr.io/$PROJECT_ID/firebase'
+  args: ['deploy']
