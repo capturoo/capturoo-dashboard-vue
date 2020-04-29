@@ -1,13 +1,6 @@
 steps:
-# Kaniko cache (optmisation)
-- name: 'gcr.io/kaniko-project/executor:latest'
-  args:
-  - --destination=gcr.io/$PROJECT_ID/image
-  - --cache=true
-  - --cache-ttl=12h
-
 # Install
-- name: 'node:12.16.3'
+- name: 'gcr.io/$PROJECT_ID/node:12.16.3'
   entrypoint: npm
   args: [ 'install' ]
 
@@ -19,7 +12,7 @@ steps:
   - 'gcloud secrets versions access latest --project=$PROJECT_ID --secret=firebase-config > config.js'
 
 # Build
-- name: 'node:12.16.3'
+- name: 'gcr.io/$PROJECT_ID/node:12.16.3'
   entrypoint: npm
   args: [ 'run', 'build' ]
 
