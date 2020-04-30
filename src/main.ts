@@ -28,8 +28,9 @@ import "firebase/auth"
         capturoo.admin().setClaims(idTokenResult.claims)
         console.log(capturoo.admin())
         try {
-          const buckets = await capturoo.admin().getBuckets()
-          console.log(buckets)
+          const nb = await capturoo.admin().createBucket('a-new-bucket-code', 'Amazing bucket name')
+          console.log(nb)
+
         } catch (err) {
           console.error(err)
         }

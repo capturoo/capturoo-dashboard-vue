@@ -48,6 +48,12 @@ interface WebhookData {
   modified: string
 }
 
+interface WebhookList {
+  object: string
+  data: WebhookData[]
+}
+
+
 interface ErrorResponse {
   status: number
   code: string
@@ -98,8 +104,15 @@ class CapturooClient {
     }
   }
 
-  async get(url: string, query: URLSearchParams) {
+  async get(url: string, query?: URLSearchParams) {
+    if (!query) {
+      query = null
+    }
     return this.do(url, 'GET', query, null, false)
+  }
+
+  async post(url: string, body: object | null, noAuth?: boolean) : Promise<Response> {
+    return this.do(url, 'POST', null, body, noAuth);
   }
 
   async delete(url: string) : Promise<Response> {
@@ -183,6 +196,26 @@ class CapturooClient {
     return this.firebaseConfig
   }
 
+  async createBucket(bucketCode: string, bucketName: string): Promise<Bucket> {
+    try {
+      const response = await this.post('/buckets', {
+        accountId: this.claimAccountId,
+        bucketCode,
+        bucketName
+      })
+
+      if (response.status === 201) {
+        const data: Bucket = await response.json()
+        return data
+      }
+
+      const data = await response.json()
+      throw new CapturooError(response.status, 'unknown-error', data.toString())
+    } catch (err) {
+      throw err
+    }
+  }
+
   async getBuckets(): Promise<Bucket[]> {
     try {
       const query = new URLSearchParams()
@@ -192,11 +225,66 @@ class CapturooClient {
       const response = await this.get('/buckets', query)
       if (response.status === 200) {
         const data: BucketList = await response.json()
-        for (let b of data.data) {
-          buckets.push(new Bucket(this, b))
+        for (let v of data.data) {
+          buckets.push(new Bucket(this, v))
         }
         return buckets
       }
+
+      const data = await response.json()
+      throw new CapturooError(response.status, 'unknown-error', data.toString())
+    } catch (err) {
+      throw err
+    }
+  }
+
+  async getBucket(bucketId: string): Promise<Bucket> {
+    try {
+      const response = await this.get(`/buckets/${bucketId}`)
+      if (response.status === 200) {
+        const data: BucketData = await response.json()
+        return new Bucket(this, data)
+      }
+
+      const data = await response.json()
+      throw new CapturooError(response.status, 'unknown-error', data.toString())
+    } catch (err) {
+      throw err
+    }
+  }
+
+  async getWebhooks(): Promise<Webhook[]> {
+    try {
+      const query = new URLSearchParams()
+      query.append('accountId', this.claimAccountId)
+
+      const webhooks: Webhook[] = []
+      const response = await this.get('/webhooks', query)
+      if (response.status === 200) {
+        const data: WebhookList = await response.json()
+        for (let v of data.data) {
+          webhooks.push(new Webhook(this, v))
+        }
+        return webhooks
+      }
+
+      const data = await response.json()
+      throw new CapturooError(response.status, 'unknown-error', data.toString())
+    } catch (err) {
+      throw err
+    }
+  }
+
+  async getWebhook(webhookId: string): Promise<Webhook> {
+    try {
+      const response = await this.get(`/webhooks/${webhookId}`)
+      if (response.status === 200) {
+        const data: WebhookData = await response.json()
+        return new Webhook(this, data)
+      }
+
+      const data = await response.json()
+      throw new CapturooError(response.status, 'unknown-error', data.toString())
     } catch (err) {
       throw err
     }
@@ -227,7 +315,7 @@ class Bucket {
   async delete(): Promise<void> {
     try {
       const response = await this._client.delete(`/buckets/${this.bucketId}`)
-      if (response.status === 200) {
+      if (response.status === 204) {
         return
       }
 
@@ -244,12 +332,38 @@ class Lead {
 }
 
 class Webhook {
+  private _client: CapturooClient
+  readonly webhookId: string
+  readonly code: string
+  readonly events: string[]
+  readonly url: string
+  readonly enabled: boolean
   readonly created: Date
   readonly modified: Date
 
   constructor(client: CapturooClient, data: WebhookData) {
+    this._client = client
+    this.webhookId = data.webhookId
+    this.code = data.code
+    this.events = data.events
+    this.url = data.url
+    this.enabled = data.enabled
     this.created = new Date(data.created)
     this.modified = new Date(data.modified)
+  }
+
+  async delete(): Promise<void> {
+    try {
+      const response = await this._client.delete(`/webhooks/${this.webhookId}`)
+      if (response.status === 204) {
+        return
+      }
+
+      const data = await response.json()
+      throw new CapturooError(response.status, 'unknown-error', data.toString())
+    } catch (err) {
+      throw err
+    }
   }
 }
 
