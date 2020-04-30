@@ -3,25 +3,47 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
-import * as firebase from 'firebase/app';
-import "firebase/auth";
+import * as firebase from 'firebase/app'
+import capturoo from './capturoo-client'
 
-// init firebase
-import firebaseConfig from '../config.js'
-firebase.initializeApp(firebaseConfig);
+import "firebase/auth"
 
-Vue.config.productionTip = false
+(async () => {
+  // init capturoo
+  try {
+    await capturoo.initializeApp({
+      endpoint: 'http://localhost:8080',
+      debug: false
+    })
+    const firebaseConfig = await capturoo.admin().getFirebaseConfig()
+    firebase.initializeApp(firebaseConfig)
 
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    store.commit('setUser', user)
-  } else {
-    store.commit('setUser', undefined)
+    Vue.config.productionTip = false
+
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (user) {
+        store.commit('setUser', user)
+        const idTokenResult = await user.getIdTokenResult()
+        capturoo.admin().setJWT(idTokenResult.token)
+        capturoo.admin().setClaims(idTokenResult.claims)
+        console.log(capturoo.admin())
+        try {
+          const buckets = await capturoo.admin().getBuckets()
+          console.log(buckets)
+        } catch (err) {
+          console.error(err)
+        }
+      } else {
+        store.commit('setUser', undefined)
+      }
+      new Vue({
+        store,
+        router,
+        vuetify,
+        render: h => h(App),
+      }).$mount('#app')
+    })
+  } catch (err) {
+    console.error(err)
   }
-  new Vue({
-    store,
-    router,
-    vuetify,
-    render: h => h(App),
-  }).$mount('#app')
-})
+})()
