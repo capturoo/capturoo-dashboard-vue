@@ -128,6 +128,20 @@ export default {
   },
   methods: {
     async createAccount() {
+      try {
+        this.loading = true
+        await this.$store.dispatch('createAccount', {
+          firstname: this.firstname,
+          lastname: this.lastname,
+          email: this.email,
+          password: this.password
+        })
+        await this.$router.replace({ name: 'signin' })
+      } catch (err) {
+        throw err
+      } finally {
+        this.loading = false
+      }
     }
   }
 }

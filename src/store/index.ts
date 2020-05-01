@@ -7,8 +7,9 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    account: null,
     buckets: [],
-    user: undefined
+    user: null
   },
   getters: {
     buckets(state) {
@@ -21,6 +22,9 @@ export default new Vuex.Store({
   mutations: {
     resetState: (state) => {
       state.user = undefined
+    },
+    setAccount(state, account) {
+      state.account = account
     },
     setUser(state, user: firebase.User) {
       state.user = user
@@ -41,6 +45,15 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    async createAccount({ commit, state }, { firstname, lastname, email, password }) {
+      try {
+        const account = await capturoo.admin().signUp(firstname, lastname, email, password)
+        commit('setAccount', account);
+        return account
+      } catch (err) {
+        throw err
+      }
+    },
     async signInWithEmailAndPassword({ commit, state }, { email, password }) {
       try {
         const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);

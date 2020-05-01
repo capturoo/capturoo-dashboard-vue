@@ -21,6 +21,18 @@ interface AutoConf {
   }
 }
 
+interface AccountData {
+  object: string
+  accountId: string
+  uid: string
+  role: string
+  email: string
+  displayName: string
+  developerKey: string
+  created: string
+  modified: string
+}
+
 interface BucketData {
   object: string
   bucketId: string
@@ -128,6 +140,9 @@ class CapturooClient {
       },
       mode: 'cors'
     }
+    if (noAuth) {
+      delete opts.headers['Authorization']
+    }
 
     if ((method === 'POST') && (!body)) {
       opts.headers['Content-Length'] = '0'
@@ -196,6 +211,41 @@ class CapturooClient {
     return this.firebaseConfig
   }
 
+  /**
+   * signUp creates a new capturoo account
+   * @param {string} firstname
+   * @param {string} lastname
+   * @param {string} email
+   * @param {string} password
+   * @returns {Promise.Account}
+   */
+  async signUp(firstname: string, lastname: string, email: string, password: string) {
+    try {
+      const response = await this.post('/signup', {
+        displayName: `${firstname} ${lastname}`,
+        email,
+        password
+      }, true)
+
+      if (response.status === 201) {
+        const data: AccountData = await response.json()
+        return new Account(this, data)
+      }
+
+      const data = await response.json()
+      throw new CapturooError(response.status, 'unknown-error', data.toString())
+    } catch (err) {
+      throw err
+    }
+  }
+
+  /**
+   * createBucket creates a new bucket inside the account associated to the
+   * currently signed in user
+   * @param {string} bucketCode lowercase including hyphens
+   * @param {string} bucketName mixed case short name
+   * @returns {Promise.<Bucket>}
+   */
   async createBucket(bucketCode: string, bucketName: string): Promise<Bucket> {
     try {
       const response = await this.post('/buckets', {
@@ -288,6 +338,30 @@ class CapturooClient {
     } catch (err) {
       throw err
     }
+  }
+}
+
+class Account {
+  private _client: CapturooClient
+  readonly accountId: string
+  readonly uid: string
+  readonly role: string
+  readonly email: string
+  readonly displayName: string
+  readonly developerKey: string
+  readonly created: Date
+  readonly modified: Date
+
+  constructor(client: CapturooClient, data: AccountData) {
+    this._client = client
+    this.accountId = data.accountId
+    this.uid = data.uid
+    this.role = data.role
+    this.email = data.email
+    this.displayName = data.displayName
+    this.developerKey = data.developerKey
+    this.created = new Date(data.created)
+    this.modified = new Date(data.modified)
   }
 }
 
