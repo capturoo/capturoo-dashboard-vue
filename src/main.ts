@@ -9,10 +9,11 @@ import capturoo from './capturoo-client'
 import "firebase/auth"
 
 (async () => {
-  // init capturoo
   try {
+    // init capturoo
     await capturoo.initializeApp({
-      endpoint: 'http://localhost:8080',
+      // endpoint: 'http://localhost:8080',
+      endpoint: 'https://api-staging.capturoo.com',
       debug: false
     })
     const firebaseConfig = await capturoo.admin().getFirebaseConfig()
@@ -26,14 +27,6 @@ import "firebase/auth"
         const idTokenResult = await user.getIdTokenResult()
         capturoo.admin().setJWT(idTokenResult.token)
         capturoo.admin().setClaims(idTokenResult.claims)
-        console.log(capturoo.admin())
-        try {
-          const nb = await capturoo.admin().createBucket('a-new-bucket-code', 'Amazing bucket name')
-          console.log(nb)
-
-        } catch (err) {
-          console.error(err)
-        }
       } else {
         store.commit('setUser', undefined)
       }

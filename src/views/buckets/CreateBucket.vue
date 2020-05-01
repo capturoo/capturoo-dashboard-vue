@@ -70,13 +70,22 @@ export default {
     ]
   }),
   methods: {
-    createBucket() {
-      this.loading = true
-      this.disabled = true
-      setTimeout(() => {
+    async createBucket() {
+      try {
+        this.loading = true
+        this.disabled = true
+        const bucket = await this.$store.dispatch('createBucket', {
+          bucketCode: this.bucketCode,
+          bucketName: this.bucketName
+        })
         this.loading = false
         this.$router.replace({ name: 'buckets-overview' })
-      }, 3000)
+      } catch (err) {
+        this.loading = false
+        throw err
+      } finally {
+        this.loading = false
+      }
     }
   }
 }

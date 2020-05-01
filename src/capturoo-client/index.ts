@@ -205,8 +205,8 @@ class CapturooClient {
       })
 
       if (response.status === 201) {
-        const data: Bucket = await response.json()
-        return data
+        const data: BucketData = await response.json()
+        return new Bucket(this, data)
       }
 
       const data = await response.json()
@@ -323,6 +323,19 @@ class Bucket {
       throw new CapturooError(response.status, 'unknown-error', data.toString())
     } catch (err) {
       throw err
+    }
+  }
+
+  data() : BucketData {
+    return {
+      object: 'bucket',
+      bucketId: this.bucketId,
+      accountId: this.accountId,
+      bucketName: this.bucketName,
+      resourceName: this.resourceName,
+      publicApiKey: this.publicApiKey,
+      created: this.created.toISOString(),
+      modified: this.modified.toISOString()
     }
   }
 }

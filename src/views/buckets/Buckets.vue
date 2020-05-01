@@ -36,7 +36,7 @@
                   {{ bucket.resourceName }}
                 </router-link>
               </td>
-              <td>{{ bucket.name }}</td>
+              <td>{{ bucket.bucketName }}</td>
               <td>{{ bucket.publicApiKey }}</td>
               <td>
                 <v-icon
@@ -52,7 +52,7 @@
               <td>{{ bucket.modified }}</td>
               <td>
                 <c-confirm-dialog
-                  :id="bucket.resourceName"
+                  :id="bucket.bucketId"
                   icon="mdi-delete"
                   @confirm="deleteConfirm"
                   cancel="Cancel"
@@ -80,17 +80,28 @@ export default {
   components: {
     'c-confirm-dialog': ConfirmDialog
   },
-  data() {
-    return {
-      buckets: [
-        { resourceName: '89233482:woofy', name: 'Woofy Woofy Project', publicApiKey: 'e46FGb1A', status: 'online', created: '2020-04-13 09:40:55.29 +0000 UTC', modified: '2020-04-15 10:45:47.952 +0000 UTC' },
-        { resourceName: '89233482:skincare', name: 'My skincare campaign', publicApiKey: 'ObGsEG4x', status: 'locked', created: '2020-04-13 11:04:23.682 +0000 UTC', modified: '2020-04-13 11:04:23.682 +0000 UTC' }
-      ]
+  computed: {
+    buckets() {
+      return this.$store.getters.buckets.map(b => {
+        return b.data()
+      })
     }
   },
+  data() {
+    return {
+      loading: false
+    }
+  },
+  beforeMount: async function() {
+    this.loading = true;
+    await this.getBuckets();
+  },
   methods: {
-    deleteConfirm(id) {
-      console.log(`delete ${id} confirm`)
+    async getBuckets() {
+      const buckets = await this.$store.dispatch('getBuckets')
+    },
+    async deleteConfirm(bucketId) {
+      await this.$store.dispatch('deleteBucket', { bucketId })
     }
   }
 }
