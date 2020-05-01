@@ -12,6 +12,9 @@ export default new Vuex.Store({
     user: null
   },
   getters: {
+    account(state) {
+      return state.account
+    },
     buckets(state) {
       return state.buckets
     },
@@ -49,6 +52,15 @@ export default new Vuex.Store({
       try {
         const account = await capturoo.admin().signUp(firstname, lastname, email, password)
         commit('setAccount', account);
+        return account
+      } catch (err) {
+        throw err
+      }
+    },
+    async getAccount({ commit, state }) {
+      try {
+        const account = await capturoo.admin().getAccount()
+        commit('setAccount', account)
         return account
       } catch (err) {
         throw err

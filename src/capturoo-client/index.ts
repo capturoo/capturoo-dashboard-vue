@@ -240,6 +240,29 @@ class CapturooClient {
   }
 
   /**
+   * getAccount fetches the account object.
+   * @param accountId? account id or defaults to the account in the claim if not set
+   * @returns {Promise.<Account>}
+   */
+  async getAccount(accountId?: string): Promise<Account> {
+    try {
+      if (!accountId) {
+        accountId = this.claimAccountId
+      }
+
+      const response = await this.get(`/accounts/${accountId}`)
+      if (response.status === 200) {
+        const account: Account = await response.json()
+        return account
+      }
+
+      const data = await response.json()
+      throw new CapturooError(response.status, 'unknown-error', data.toString())
+    } catch (err) {
+      throw err
+    }
+  }
+  /**
    * createBucket creates a new bucket inside the account associated to the
    * currently signed in user
    * @param {string} bucketCode lowercase including hyphens
