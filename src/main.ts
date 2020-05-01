@@ -8,11 +8,23 @@ import "firebase/auth"
 import capturoo from './capturoo-client'
 
 (async () => {
+  function hostnameToEndpoint() {
+    const hostmap = {
+      'localhost': 'http://localhost:8080',
+      'dashboard-staging.capturoo.com': 'https://api-staging.capturoo.com',
+      'dashboard.caputroo.com': 'https://api.capturoo.com'
+    }
+    const hostname = window.location.hostname
+    if (hostname in hostmap) {
+      return hostmap[hostname]
+    }
+    return hostmap['localhost']
+  }
+
   try {
     // init capturoo
     await capturoo.initializeApp({
-      endpoint: 'http://localhost:8080',
-      //endpoint: 'https://api-staging.capturoo.com',
+      endpoint: hostnameToEndpoint(),
       debug: false
     })
     const firebaseConfig = await capturoo.admin().getFirebaseConfig()
