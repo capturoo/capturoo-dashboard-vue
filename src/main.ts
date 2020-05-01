@@ -23,7 +23,7 @@ import capturoo from './capturoo-client'
 
   try {
     // init capturoo
-    await capturoo.initializeApp({
+    capturoo.initializeApp({
       endpoint: hostnameToEndpoint(),
       debug: false
     })

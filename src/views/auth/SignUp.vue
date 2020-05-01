@@ -58,7 +58,7 @@
     <v-card-actions>
       <v-spacer></v-spacer>
       <v-btn
-        @click="createAccount"
+        @click="createAccountAndSignIn"
         :loading="loading"
         :disabled="loading"
         width="100%"
@@ -127,7 +127,7 @@ export default {
     }
   },
   methods: {
-    async createAccount() {
+    async createAccountAndSignIn() {
       try {
         this.loading = true
         await this.$store.dispatch('createAccount', {
@@ -136,7 +136,11 @@ export default {
           email: this.email,
           password: this.password
         })
-        await this.$router.replace({ name: 'signin' })
+        await this.$store.dispatch('signInWithEmailAndPassword', {
+          email: this.email,
+          password: this.password
+        })
+        await this.$router.replace({ name: 'home' })
       } catch (err) {
         throw err
       } finally {
