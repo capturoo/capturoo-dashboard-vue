@@ -4,16 +4,15 @@ import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
 import * as firebase from 'firebase/app'
-import capturoo from './capturoo-client'
-
 import "firebase/auth"
+import capturoo from './capturoo-client'
 
 (async () => {
   try {
     // init capturoo
     await capturoo.initializeApp({
-      // endpoint: 'http://localhost:8080',
-      endpoint: 'https://api-staging.capturoo.com',
+      endpoint: 'http://localhost:8080',
+      //endpoint: 'https://api-staging.capturoo.com',
       debug: false
     })
     const firebaseConfig = await capturoo.admin().getFirebaseConfig()

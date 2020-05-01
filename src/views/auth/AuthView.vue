@@ -1,11 +1,8 @@
 <template>
   <v-container fill-height fluid>
-    <v-row
-      align="center"
-      justify="center"
-    >
+    <v-row align="center" justify="center">
       <v-col>
-        <router-view name="signin"></router-view>
+        <router-view name="auth"></router-view>
       </v-col>
     </v-row>
   </v-container>

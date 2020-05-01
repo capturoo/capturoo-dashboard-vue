@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import DashboardView from '@/views/DashboardView.vue'
-import SignInView from '@/views/auth/SignInView.vue'
+import AuthView from '@/views/auth/AuthView.vue'
 import store from '@/store'
 
 Vue.use(VueRouter)
@@ -76,16 +76,49 @@ const routes: Array<RouteConfig> = [
     ]
   },
   {
-    path: '/signin',
+    path: '/auth',
     components: {
-      default: SignInView
+      default: AuthView
+    },
+    meta: {
+      isPublic: true
     },
     children: [
       {
-        path: '',
+        path: 'signin',
         name: 'signin',
         components: {
-          signin: () => import(/* webpackChunkName: "account-settings" */ '../views/auth/SignIn.vue')
+          auth: () => import(/* webpackChunkName: "signin" */ '../views/auth/SignIn.vue')
+        },
+        meta: {
+          isPublic: true
+        }
+      },
+      {
+        path: 'signup',
+        name: 'signup',
+        components: {
+          auth: () => import(/* webpackChunkName: "signup" */ '../views/auth/SignUp.vue')
+        },
+        meta: {
+          isPublic: true
+        }
+      },
+      {
+        path: 'reset-password',
+        name: 'reset-password',
+        components: {
+          auth: () => import(/* webpackChunkName: "reset-password" */ '../views/auth/ResetPassword.vue')
+        },
+        meta: {
+          isPublic: true
+        }
+      },
+      {
+        path: 'password-reset-sent',
+        name: 'password-reset-sent',
+        components: {
+          auth: () => import(/* webpackChunkName: "password-reset-sent" */ '../views/auth/PasswordSent.vue')
         },
         meta: {
           isPublic: true
@@ -120,7 +153,7 @@ router.beforeEach((to, from, next) => {
 
   // by default a user is sent to the signin page unless
   // they met the criteria above
-  next('signin');
+  next({ name: 'signin' });
 })
 
 export default router

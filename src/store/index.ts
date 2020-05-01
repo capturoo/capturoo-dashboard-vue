@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import * as firebase from 'firebase/app'
-import "firebase/auth"
 import capturoo from '@/capturoo-client'
 
 Vue.use(Vuex)
@@ -47,6 +46,13 @@ export default new Vuex.Store({
         const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
         const user = userCredential.user
         commit('setUser', user);
+      } catch (err) {
+        throw err
+      }
+    },
+    async sendPasswordResetEmail({ commit, state }, { email }) {
+      try {
+        await firebase.auth().sendPasswordResetEmail(email)
       } catch (err) {
         throw err
       }
