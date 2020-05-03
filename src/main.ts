@@ -25,7 +25,7 @@ import capturoo from './capturoo-client'
     // init capturoo
     capturoo.initializeApp({
       endpoint: hostnameToEndpoint(),
-      debug: false
+      debug: true
     })
     const firebaseConfig = await capturoo.admin().getFirebaseConfig()
     firebase.initializeApp(firebaseConfig)
@@ -35,8 +35,12 @@ import capturoo from './capturoo-client'
     firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
         store.commit('setUser', user)
+
+        // https://github.com/firebase/firebase-js-sdk/issues/2985
+        capturoo.admin().setFirebaseUser(user)
+
         const idTokenResult = await user.getIdTokenResult()
-        capturoo.admin().setJWT(idTokenResult.token)
+        // capturoo.admin().setJWT(idTokenResult.token)
         capturoo.admin().setClaims(idTokenResult.claims)
       } else {
         store.commit('setUser', undefined)

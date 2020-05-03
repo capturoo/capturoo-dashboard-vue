@@ -77,6 +77,7 @@ const CAPTUROO_ENDPOINT = 'https://api-staging.capturoo.com'
 class CapturooClient {
   static client
   endpoint: string
+  user: firebase.User
   claimAccountId: string
   claimRole: string | undefined
   claimUid: string | undefined
@@ -116,6 +117,31 @@ class CapturooClient {
     }
   }
 
+  setFirebaseUser(user: firebase.User) {
+    this.user = user
+  }
+
+  setJWT(jwt: string) {
+    this.jwt = jwt
+  }
+
+  setClaims(claims: any) {
+    this.claimAccountId = undefined
+    if ('cap_aid' in claims) {
+      this.claimAccountId = claims['cap_aid']
+    }
+
+    this.claimRole = undefined
+    if ('cap_role' in claims) {
+      this.claimRole = claims['cap_role']
+    }
+
+    this.claimUid = undefined
+    if ('user_id' in claims) {
+      this.claimUid = claims['user_id']
+    }
+  }
+
   async get(url: string, query?: URLSearchParams) {
     if (!query) {
       query = null
@@ -131,17 +157,20 @@ class CapturooClient {
     return this.do(url, 'DELETE', null, null);
   }
 
-  private async do(url: string, method: string, query: URLSearchParams | null, body: object | null, noAuth?: boolean) : Promise<Response> {
-    let opts : any  = {
+  private async do(url: string, method: string, query: URLSearchParams | null, body: object | null, noAuth?: boolean): Promise<Response> {
+    const opts : any  = {
       method,
       headers: {
         'Accept': 'application/json',
-        'Authorization': noAuth ? '' : `Bearer ${this.jwt}`,
+
       },
       mode: 'cors'
     }
-    if (noAuth) {
-      delete opts.headers['Authorization']
+    console.log('a')
+    if (noAuth === false) {
+      console.log('adding auth header')
+      const { token } = await this.user.getIdTokenResult()
+      opts.headers['Authorization'] = `Bearer ${token}`
     }
 
     if ((method === 'POST') && (!body)) {
@@ -176,27 +205,6 @@ class CapturooClient {
       return response
     } catch (err) {
       throw err
-    }
-  }
-
-  setJWT(jwt: string) {
-    this.jwt = jwt
-  }
-
-  setClaims(claims: any) {
-    this.claimAccountId = undefined
-    if ('cap_aid' in claims) {
-      this.claimAccountId = claims['cap_aid']
-    }
-
-    this.claimRole = undefined
-    if ('cap_role' in claims) {
-      this.claimRole = claims['cap_role']
-    }
-
-    this.claimUid = undefined
-    if ('user_id' in claims) {
-      this.claimUid = claims['user_id']
     }
   }
 

@@ -8,12 +8,16 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     account: null,
+    bucket: null,
     buckets: [],
     user: null
   },
   getters: {
     account(state) {
       return state.account
+    },
+    bucket(state) {
+      return state.bucket
     },
     buckets(state) {
       return state.buckets
@@ -31,6 +35,9 @@ export default new Vuex.Store({
     },
     setUser(state, user: firebase.User) {
       state.user = user
+    },
+    setBucket(state, bucket) {
+      state.bucket = bucket
     },
     setBuckets(state, buckets) {
       state.buckets = buckets
@@ -99,14 +106,26 @@ export default new Vuex.Store({
         throw err
       }
     },
-    async getBuckets() {
+    async getBucket({ commit }, { bucketId }) {
+      try {
+        const bucket = await capturoo.admin().getBucket(bucketId)
+        commit('setBucket', bucket)
+        return bucket
+      } catch (err) {
+        throw err
+      }
+    },
+    async getBuckets({ commit }) {
       try {
         const buckets = await capturoo.admin().getBuckets()
-        this.commit('setBuckets', buckets)
+        commit('setBuckets', buckets)
         return buckets
       } catch (err) {
         throw err
       }
+    },
+    resetBucket({ commit }) {
+      commit('setBucket', null)
     },
     async deleteBucket({ commit, state }, { bucketId }) {
       const results = state.buckets.filter(b => {

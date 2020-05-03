@@ -14,7 +14,7 @@
 
     <v-container fluid>
       <p class="text--secondary">Buckets provide containers for collections of leads.</p>
-      <v-simple-table class="mt-4">
+      <v-simple-table v-if="buckets" class="mt-4">
         <template v-slot:default>
           <thead>
             <tr>
@@ -31,7 +31,7 @@
             <tr v-for="bucket in buckets" :key="bucket.resourceName">
               <td>
                 <router-link
-                  :to="{ name: 'view-bucket', params: { bucketId: 'xyz' }}"
+                  :to="{ name: 'view-bucket', params: { bucketId: bucket.bucketId }}"
                 >
                   {{ bucket.resourceName }}
                 </router-link>
@@ -73,7 +73,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 export default {
@@ -82,9 +82,12 @@ export default {
   },
   computed: {
     buckets() {
-      return this.$store.getters.buckets.map(b => {
-        return b.data()
-      })
+      if (this.$store.getters.buckets) {
+        return this.$store.getters.buckets.map(b => {
+          return b.data()
+        })
+      }
+      return null
     }
   },
   data() {
@@ -98,7 +101,7 @@ export default {
   },
   methods: {
     async getBuckets() {
-      const buckets = await this.$store.dispatch('getBuckets')
+      await this.$store.dispatch('getBuckets')
     },
     async deleteConfirm(bucketId) {
       await this.$store.dispatch('deleteBucket', { bucketId })

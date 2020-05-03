@@ -18,7 +18,7 @@
 
     <v-divider></v-divider>
 
-    <v-container fluid>
+    <v-container v-if="bucket" fluid>
       <v-row>
           <v-col cols="12" x="6" md="6">
             <v-icon
@@ -27,24 +27,54 @@
               color="success"
               class="pr-4 pb-1"
             >mdi-cloud-check</v-icon>
-            <span class="font-weight-light title">skincare</span>
+            <span class="font-weight-light title">{{ bucket.resourceName }}</span>
           </v-col>
       </v-row>
 
       <v-row>
         <v-col cols="12" xs="6" md="6">
           <div class="caption grey--text">Bucket name</div>
-          <div>My skincare campaign</div>
+          <div>{{ bucket.bucketName }}</div>
         </v-col>
       </v-row>
 
       <v-row>
         <v-col cols="12" xs="6" md="6">
           <div class="caption grey--text">Public API Key</div>
-          <div>ObGsEG4x</div>
+          <div>{{ bucket.publicApiKey }}</div>
         </v-col>
       </v-row>
 
+      <v-row>
+        <v-col cols="12" xs="6" md="6">
+          <div class="caption grey--text">Created</div>
+          <div><p class="grey--text text--darken-1 pt-0 body-2">{{ bucket.created }}</p></div>
+        </v-col>
+      </v-row>
     </v-container>
   </div>
 </template>
+
+<script lang="ts">
+export default {
+  computed: {
+    bucket() {
+      return this.$store.getters.bucket
+    }
+  },
+  beforeMount: async function() {
+    await this.getBucket(this.$route.params.bucketId);
+  },
+  beforeDestroy() {
+    this.$store.dispatch('resetBucket')
+  },
+  methods: {
+    async getBucket(bucketId) {
+      await this.$store.dispatch('getBucket', { bucketId })
+    },
+    async deleteConfirm(bucketId) {
+      await this.$store.dispatch('deleteBucket', { bucketId })
+    }
+  }
+}
+</script>

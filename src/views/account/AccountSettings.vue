@@ -11,7 +11,7 @@
       <v-tab>Developer Keys</v-tab>
     </v-tabs>
 
-    <v-tabs-items v-model="tab">
+    <v-tabs-items v-if="account" v-model="tab">
       <v-tab-item :transition="false" :reverse-transition="false">
         <v-card flat>
           <v-card-text>
@@ -58,18 +58,13 @@ export default {
     }
   },
   beforeMount: async function() {
-    this.loading = true;
-    console.log('loading account')
-    const account = await this.getBuckets();
-    console.log('account loaded')
-    console.log(account)
+    if (!this.$store.getters.account) {
+      await this.getAccount();
+    }
   },
   methods: {
-    async getBuckets() {
-      const account = await this.$store.dispatch('getAccount')
-      console.log('method: getBuckets')
-      console.log(account)
-      return account
+    async getAccount() {
+      await this.$store.dispatch('getAccount')
     },
     async deleteConfirm(bucketId) {
       await this.$store.dispatch('deleteBucket', { bucketId })
