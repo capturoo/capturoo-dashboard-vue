@@ -25,7 +25,7 @@ import capturoo from './capturoo-client'
     // init capturoo
     capturoo.initializeApp({
       endpoint: hostnameToEndpoint(),
-      debug: true
+      debug: false
     })
     const firebaseConfig = await capturoo.admin().getFirebaseConfig()
     firebase.initializeApp(firebaseConfig)

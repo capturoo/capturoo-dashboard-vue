@@ -166,9 +166,8 @@ class CapturooClient {
       },
       mode: 'cors'
     }
-    console.log('a')
+
     if (noAuth === false) {
-      console.log('adding auth header')
       const { token } = await this.user.getIdTokenResult()
       opts.headers['Authorization'] = `Bearer ${token}`
     }
