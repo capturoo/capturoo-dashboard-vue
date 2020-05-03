@@ -10,10 +10,12 @@
         <span>Capturoo</span>
       </v-toolbar-title>
 
-      <c-select-bucket-dialog
-        @selected="selectedBucket"
-        bucket-name="My Bucket Name"
-      ></c-select-bucket-dialog>
+      <div v-if="showBucketSelector">
+        <c-select-bucket-dialog
+          @selected="selectedBucket"
+          :bucket-name="dialogBucketName"
+        ></c-select-bucket-dialog>
+      </div>
 
       <v-spacer></v-spacer>
 
@@ -56,15 +58,28 @@ export default {
     return {
       drawer: true,
       links: [
-        { icon: 'mdi-bucket-outline', text: 'Buckets', route: { name: 'buckets-overview' } },
-        { icon: 'mdi-webhook', text: 'Webhooks', route: { name: 'webhooks-overview' } },
+        { icon: 'mdi-bucket-outline', text: 'Buckets', route: { name: 'buckets-overview' }},
+        { icon: 'mdi-webhook', text: 'Webhooks', route: { name: 'webhooks-overview' }},
+        { icon: 'mdi-file-document-outline', text: 'Leads', route: { name: 'leads-overview' }},
         { icon: 'mdi-account-settings', text: 'Account Settings', route: { name: 'account-settings' }}
       ]
     }
   },
+  computed: {
+    showBucketSelector() {
+      return this.$root.$data.showBucketSelector
+    },
+    dialogBucketName() {
+      const bucketContext = this.$store.getters.bucketContext
+      if (bucketContext) {
+        return bucketContext.bucketName
+      }
+      return 'Select a bucket'
+    }
+  },
   methods: {
     selectedBucket(bucket) {
-      console.dir(bucket)
+      this.$store.dispatch('setBucketContext', { bucket })
     },
     async signOut() {
       try {

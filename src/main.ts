@@ -49,6 +49,9 @@ import capturoo from './capturoo-client'
         store,
         router,
         vuetify,
+        data: {
+          showBucketSelector: false
+        },
         render: h => h(App),
       }).$mount('#app')
     })

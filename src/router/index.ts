@@ -67,6 +67,20 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
+        path: 'leads',
+        name: 'leads-overview',
+        components: {
+          dashboard: () => import(/* webpackChunkName: "leads-overview" */ '@/views/leads/LeadsOverview.vue')
+        }
+      },
+      {
+        path: 'leads/create',
+        name: 'create-lead',
+        components: {
+          dashboard: () => import(/* webpackChunkName: "create-lead-info" */ '@/views/leads/CreateLeadInfo.vue')
+        }
+      },
+      {
         path: 'account-settings',
         name: 'account-settings',
         components: {

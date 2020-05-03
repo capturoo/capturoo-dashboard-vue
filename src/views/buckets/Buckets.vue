@@ -81,20 +81,19 @@ export default {
   computed: {
     buckets() {
       if (this.$store.getters.buckets) {
-        return this.$store.getters.buckets.map(b => {
-          return b.data()
-        })
+        return this.$store.getters.buckets.map(b => b.data())
       }
       return null
     }
   },
   beforeMount: async function() {
-    await this.getBuckets()
+    try {
+      await this.$store.dispatch('getBuckets')
+    } catch (err) {
+      throw err
+    }
   },
   methods: {
-    async getBuckets() {
-      await this.$store.dispatch('getBuckets')
-    },
     async deleteConfirm(bucketId) {
       await this.$store.dispatch('deleteBucket', { bucketId })
     }

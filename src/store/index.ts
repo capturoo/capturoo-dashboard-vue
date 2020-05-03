@@ -5,13 +5,13 @@ import capturoo from '@/capturoo-client'
 
 Vue.use(Vuex)
 
-
-
 export default new Vuex.Store({
   state: {
     account: null,
+    bucketContext: null,
     bucket: null,
     buckets: [],
+    dialogBuckets: [],
     webhook: null,
     webhooks: [],
     user: null
@@ -20,11 +20,17 @@ export default new Vuex.Store({
     account(state) {
       return state.account
     },
+    bucketContext(state) {
+      return state.bucketContext
+    },
     bucket(state) {
       return state.bucket
     },
     buckets(state) {
       return state.buckets
+    },
+    dialogBuckets(state) {
+      return state.dialogBuckets
     },
     webhook(state) {
       return state.webhook
@@ -46,11 +52,17 @@ export default new Vuex.Store({
     setUser(state, user: firebase.User) {
       state.user = user
     },
+    setBucketContext(state, bucket) {
+      state.bucketContext = bucket
+    },
     setBucket(state, bucket) {
       state.bucket = bucket
     },
     setBuckets(state, buckets) {
       state.buckets = buckets
+    },
+    setDialogBuckets(state, buckets) {
+      state.dialogBuckets = buckets
     },
     addBucket(state, bucket) {
       state.buckets.push(bucket)
@@ -113,7 +125,7 @@ export default new Vuex.Store({
         throw err
       }
     },
-    async signOut({ commit, state }) {
+    async signOut({ commit }) {
       try {
         await firebase.auth().signOut()
         commit('resetState')
@@ -121,7 +133,14 @@ export default new Vuex.Store({
         throw err
       }
     },
-    async createBucket({ commit, state }, { bucketCode, bucketName }) {
+    setBucketContext({ commit }, { bucket }) {
+      try {
+        commit('setBucketContext', bucket)
+      } catch (err) {
+        throw err
+      }
+    },
+    async createBucket({ commit }, { bucketCode, bucketName }) {
       try {
         const bucket = await capturoo.admin().createBucket(bucketCode, bucketName)
         commit('addBucket', bucket)
@@ -148,6 +167,15 @@ export default new Vuex.Store({
         throw err
       }
     },
+    async getDialogBuckets({ commit }) {
+      try {
+        const buckets = await capturoo.admin().getBuckets()
+        commit('setDialogBuckets', buckets)
+        return buckets
+      } catch (err) {
+        throw err
+      }
+    },
     async getWebhook({ commit }, { webhookId }) {
       try {
         const webhook = await capturoo.admin().getWebhook(webhookId)
@@ -168,6 +196,12 @@ export default new Vuex.Store({
     },
     resetBucket({ commit }) {
       commit('setBucket', null)
+    },
+    resetBuckets({ commit }) {
+      commit('setBuckets', [])
+    },
+    resetDialogBuckets({ commit }) {
+      commit('setDialogBuckets', [])
     },
     resetWebhook({ commit }) {
       commit('setWebhook', null)
