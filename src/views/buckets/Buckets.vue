@@ -23,7 +23,6 @@
               <th>Public API Key</th>
               <th>Status</th>
               <th>Created</th>
-              <th>Last modified</th>
               <th>&nbsp;</th>
             </tr>
           </thead>
@@ -44,12 +43,11 @@
                   color="warning"
                 >mdi-upload-lock</v-icon>
                 <v-icon
-                  v-show="bucket.status == 'online'"
+                  v-show="bucket.status != 'locked'"
                   color="success"
-                >mdi-cloud-check</v-icon>
+                >mdi-cloud-check-outline</v-icon>
               </td>
               <td>{{ bucket.created }}</td>
-              <td>{{ bucket.modified }}</td>
               <td>
                 <c-confirm-dialog
                   :id="bucket.bucketId"

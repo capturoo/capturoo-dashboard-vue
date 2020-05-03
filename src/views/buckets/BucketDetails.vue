@@ -26,7 +26,7 @@
               left
               color="success"
               class="pr-4 pb-1"
-            >mdi-cloud-check</v-icon>
+            >mdi-cloud-check-outline</v-icon>
             <span class="font-weight-light title">{{ bucket.resourceName }}</span>
           </v-col>
       </v-row>
@@ -63,18 +63,16 @@ export default {
     }
   },
   beforeMount: async function() {
-    await this.getBucket(this.$route.params.bucketId);
+    try {
+      await this.$store.dispatch('getBucket', {
+        bucketId: this.$route.params.bucketId
+      })
+    } catch (err) {
+      throw err
+    }
   },
   beforeDestroy() {
     this.$store.dispatch('resetBucket')
-  },
-  methods: {
-    async getBucket(bucketId) {
-      await this.$store.dispatch('getBucket', { bucketId })
-    },
-    async deleteConfirm(bucketId) {
-      await this.$store.dispatch('deleteBucket', { bucketId })
-    }
   }
 }
 </script>

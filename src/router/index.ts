@@ -54,16 +54,16 @@ const routes: Array<RouteConfig> = [
       },
       {
         path: 'webhooks/:webhookId',
-        name: 'edit-webhook',
-        components: {
-          dashboard: () => import(/* webpackChunkName: "edit-webhook" */ '@/views/webhooks/EditWebhook.vue')
-        }
-      },
-      {
-        path: 'webhooks/:webhookId',
         name: 'view-webhook',
         components: {
           dashboard: () => import(/* webpackChunkName: "view-webhook" */ '../views/webhooks/ViewWebhook.vue')
+        }
+      },
+      {
+        path: 'webhooks/:webhookId/edit',
+        name: 'edit-webhook',
+        components: {
+          dashboard: () => import(/* webpackChunkName: "edit-webhook" */ '@/views/webhooks/EditWebhook.vue')
         }
       },
       {

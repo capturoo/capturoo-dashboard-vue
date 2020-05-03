@@ -12,6 +12,7 @@ export default new Vuex.Store({
     account: null,
     bucket: null,
     buckets: [],
+    webhook: null,
     webhooks: [],
     user: null
   },
@@ -24,6 +25,9 @@ export default new Vuex.Store({
     },
     buckets(state) {
       return state.buckets
+    },
+    webhook(state) {
+      return state.webhook
     },
     webhooks(state) {
       return state.webhooks
@@ -50,6 +54,9 @@ export default new Vuex.Store({
     },
     addBucket(state, bucket) {
       state.buckets.push(bucket)
+    },
+    setWebhook(state, webhook) {
+      state.webhook = webhook
     },
     setWebhooks(state, webhooks) {
       state.webhooks = webhooks
@@ -141,6 +148,15 @@ export default new Vuex.Store({
         throw err
       }
     },
+    async getWebhook({ commit }, { webhookId }) {
+      try {
+        const webhook = await capturoo.admin().getWebhook(webhookId)
+        commit('setWebhook', webhook)
+        return webhook
+      } catch (err) {
+        throw err
+      }
+    },
     async getWebhooks({ commit }) {
       try {
         const webhooks = await capturoo.admin().getWebhooks()
@@ -152,6 +168,9 @@ export default new Vuex.Store({
     },
     resetBucket({ commit }) {
       commit('setBucket', null)
+    },
+    resetWebhook({ commit }) {
+      commit('setWebhook', null)
     },
     async deleteBucket({ commit, state }, { bucketId }) {
       const results = state.buckets.filter(v => v.bucketId === bucketId)

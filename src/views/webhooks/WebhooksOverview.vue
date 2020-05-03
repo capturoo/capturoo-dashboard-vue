@@ -39,11 +39,11 @@
                 <v-icon
                   v-show="webhook.enabled == true"
                   color="success"
-                >mdi-lightbulb-on</v-icon>
+                >mdi-webhook</v-icon>
                 <v-icon
                   v-show="webhook.enabled == false"
                   color="error"
-                >mdi-lightbulb-off</v-icon>
+                >mdi-webhook</v-icon>
               </td>
               <td>{{ webhook.url }}</td>
               <td>
