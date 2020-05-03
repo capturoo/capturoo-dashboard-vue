@@ -14,7 +14,7 @@
 
     <v-container fluid>
       <p class="pl-1 text--secondary">Webhooks description TODO.</p>
-      <v-simple-table class="mt-4">
+      <v-simple-table v-if="webhooks" class="mt-4">
         <template v-slot:default>
           <thead>
             <tr>
@@ -90,18 +90,23 @@ export default {
   components: {
     'c-confirm-dialog': ConfirmDialog
   },
-  data() {
-    return {
-      webhooks: [
-        { webhookId: 'xyz123', code: 'webhook-one', url: 'https://us-central1-capturoo-api-staging.cloudfunctions.net/capturooWebhookPluginTest1', events: ['bucket.created', 'bucket-deleted', 'lead.created:woofy,skincare,big-long-project-name,lions,zebra'], enabled: true, created: '2020-04-13 09:40:55.29 +0000 UTC', modified: '2020-04-15 10:45:47.952 +0000 UTC' },
-        { webhookId: 'def345', code: 'webhook-two', url: 'https://us-central1-capturoo-api-staging.cloudfunctions.net/capturooWebhookPluginTest2', events: ['bucket.created'], enabled: false, created: '2020-04-13 09:40:55.29 +0000 UTC', modified: '2020-04-15 10:45:47.952 +0000 UTC' },
-        { webhookId: 'abc567', code: 'webhook-three', url: 'https://us-central1-capturoo-api-staging.cloudfunctions.net/capturooWebhookPluginTest3', events: ['bucket.created'], enabled: true, created: '2020-04-13 09:40:55.29 +0000 UTC', modified: '2020-04-15 10:45:47.952 +0000 UTC' },
-      ]
+  computed: {
+    webhooks() {
+      if (this.$store.getters.webhooks) {
+        return this.$store.getters.webhooks.map(v => v.data())
+      }
+      return null
     }
   },
+  beforeMount: async function() {
+    await this.getWebhooks()
+  },
   methods: {
-    deleteConfirm(id) {
-      console.log(`delete ${id} confirm`)
+    async getWebhooks() {
+      await this.$store.dispatch('getWebhooks')
+    },
+    async deleteConfirm(webhookId) {
+      await this.$store.dispatch('deleteWebhook', { webhookId })
     }
   }
 }

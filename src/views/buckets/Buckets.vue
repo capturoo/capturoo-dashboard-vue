@@ -13,7 +13,7 @@
     <v-divider></v-divider>
 
     <v-container fluid>
-      <p class="text--secondary">Buckets provide containers for collections of leads.</p>
+      <p class="pl-1 text--secondary">Buckets provide containers for collections of leads.</p>
       <v-simple-table v-if="buckets" class="mt-4">
         <template v-slot:default>
           <thead>
@@ -90,14 +90,8 @@ export default {
       return null
     }
   },
-  data() {
-    return {
-      loading: false
-    }
-  },
   beforeMount: async function() {
-    this.loading = true;
-    await this.getBuckets();
+    await this.getBuckets()
   },
   methods: {
     async getBuckets() {

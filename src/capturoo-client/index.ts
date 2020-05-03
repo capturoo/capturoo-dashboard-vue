@@ -154,10 +154,10 @@ class CapturooClient {
   }
 
   async delete(url: string) : Promise<Response> {
-    return this.do(url, 'DELETE', null, null);
+    return this.do(url, 'DELETE', null, null, false);
   }
 
-  private async do(url: string, method: string, query: URLSearchParams | null, body: object | null, noAuth?: boolean): Promise<Response> {
+  private async do(url: string, method: string, query: URLSearchParams | null, body: object | null, noAuth: boolean): Promise<Response> {
     const opts : any  = {
       method,
       headers: {
@@ -166,9 +166,8 @@ class CapturooClient {
       },
       mode: 'cors'
     }
-    console.log('a')
+
     if (noAuth === false) {
-      console.log('adding auth header')
       const { token } = await this.user.getIdTokenResult()
       opts.headers['Authorization'] = `Bearer ${token}`
     }
@@ -481,6 +480,19 @@ class Webhook {
       throw new CapturooError(response.status, 'unknown-error', data.toString())
     } catch (err) {
       throw err
+    }
+  }
+
+  data() : WebhookData {
+    return {
+      object: 'bucket',
+      webhookId: this.webhookId,
+      code: this.code,
+      events: this.events,
+      url: this.url,
+      enabled: this.enabled,
+      created: this.created.toISOString(),
+      modified: this.modified.toISOString()
     }
   }
 }
