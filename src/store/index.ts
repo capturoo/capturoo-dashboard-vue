@@ -5,11 +5,14 @@ import capturoo from '@/capturoo-client'
 
 Vue.use(Vuex)
 
+
+
 export default new Vuex.Store({
   state: {
     account: null,
     bucket: null,
     buckets: [],
+    webhooks: [],
     user: null
   },
   getters: {
@@ -21,6 +24,9 @@ export default new Vuex.Store({
     },
     buckets(state) {
       return state.buckets
+    },
+    webhooks(state) {
+      return state.webhooks
     },
     user(state) {
       return state.user
@@ -45,6 +51,9 @@ export default new Vuex.Store({
     addBucket(state, bucket) {
       state.buckets.push(bucket)
     },
+    setWebhooks(state, webhooks) {
+      state.webhooks = webhooks
+    },
     removeBucket(state, bucketId) {
       function arrayRemove(arr: any, value: string) {
         return arr.filter((ele: any) => {
@@ -52,6 +61,14 @@ export default new Vuex.Store({
         })
       }
       state.buckets = arrayRemove(state.buckets, bucketId)
+    },
+    removeWebhook(state, webhookId) {
+      function arrayRemove(arr: any, value: string) {
+        return arr.filter((ele: any) => {
+          return ele.webhookId != value
+        })
+      }
+      state.webhooks = arrayRemove(state.webhooks, webhookId)
     }
   },
   actions: {
@@ -124,17 +141,32 @@ export default new Vuex.Store({
         throw err
       }
     },
+    async getWebhooks({ commit }) {
+      try {
+        const webhooks = await capturoo.admin().getWebhooks()
+        commit('setWebhooks', webhooks)
+        return webhooks
+      } catch (err) {
+        throw err
+      }
+    },
     resetBucket({ commit }) {
       commit('setBucket', null)
     },
     async deleteBucket({ commit, state }, { bucketId }) {
-      const results = state.buckets.filter(b => {
-        return b.bucketId === bucketId
-      })
+      const results = state.buckets.filter(v => v.bucketId === bucketId)
       if (results.length === 1) {
         const bucket = results[0]
         await bucket.delete()
         commit('removeBucket', bucketId)
+      }
+    },
+    async deleteWebhook({ commit, state }, { webhookId }) {
+      const results = state.webhooks.filter(v => v.webhookId === webhookId)
+      if (results.length === 1) {
+        const webhook = results[0]
+        await webhook.delete()
+        commit('removeWebhook', webhookId)
       }
     }
   }
