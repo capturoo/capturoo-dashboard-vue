@@ -27,7 +27,7 @@
               color="success"
               class="pr-4 pb-1"
             >mdi-webhook</v-icon>
-            <span class="font-weight-light title">{{ webhook.code }}</span>
+            <span class="font-weight-light title">{{ webhook.webhookCode }}</span>
           </v-col>
       </v-row>
 

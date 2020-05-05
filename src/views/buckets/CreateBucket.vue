@@ -16,7 +16,7 @@
 
     <v-container fluid>
       <p class="text--secondary">A bucket is a container for a collection of leads.</p>
-      <v-form>
+      <v-form v-model="valid">
         <v-row>
           <v-col cols="12" sm="6" lg="3">
             <v-text-field
@@ -40,14 +40,18 @@
             ></v-text-field>
 
             <v-btn
-              :disabled="disabled"
+              :disabled="!valid || loading"
               :loading="loading"
               @click="createBucket"
               class="primary ml-0"
             >
               Create
             </v-btn>
-            <v-btn depressed class="ml-4">Cancel</v-btn>
+            <v-btn
+              @click="cancel"
+              depressed
+              class="ml-4"
+            >Cancel</v-btn>
           </v-col>
         </v-row>
       </v-form>
@@ -58,6 +62,7 @@
 <script lang="ts">
 export default {
   data: () => ({
+    valid: false,
     loading: false,
     disabled: false,
     bucketCode: '',
@@ -86,6 +91,9 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+    cancel() {
+      this.$router.replace({ name: 'buckets-overview' })
     }
   }
 }

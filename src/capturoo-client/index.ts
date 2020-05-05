@@ -1,3 +1,5 @@
+import 'whatwg-fetch'
+
 interface CapturooClientOptions {
   endpoint?: string
   firebaseConfig?: FirebaseConfig
@@ -37,7 +39,7 @@ interface BucketData {
   object: string
   bucketId: string
   accountId: string
-  resourceName: string
+  bucketCode: string
   bucketName: string
   publicApiKey: string
   created: string
@@ -52,7 +54,7 @@ interface BucketList {
 interface WebhookData {
   object: string
   webhookId: string
-  code: string
+  webhookCode: string
   events: string[]
   url: string
   enabled: boolean
@@ -64,7 +66,6 @@ interface WebhookList {
   object: string
   data: WebhookData[]
 }
-
 
 interface ErrorResponse {
   status: number
@@ -149,7 +150,10 @@ class CapturooClient {
     return this.do(url, 'GET', query, null, false)
   }
 
-  async post(url: string, body: object | null, noAuth?: boolean) : Promise<Response> {
+  async post(url: string, body: object | null, noAuth?: boolean): Promise<Response> {
+    if (!noAuth) {
+      noAuth = false
+    }
     return this.do(url, 'POST', null, body, noAuth);
   }
 
@@ -161,8 +165,7 @@ class CapturooClient {
     const opts : any  = {
       method,
       headers: {
-        'Accept': 'application/json',
-
+        'Accept': 'application/json'
       },
       mode: 'cors'
     }
@@ -269,6 +272,7 @@ class CapturooClient {
       throw err
     }
   }
+
   /**
    * createBucket creates a new bucket inside the account associated to the
    * currently signed in user
@@ -369,6 +373,38 @@ class CapturooClient {
       throw err
     }
   }
+
+  /**
+   * createWebhook creates a new bucket inside the account associated to the
+   * currently signed in user
+   * @param {string}   webhookCode lowercase including hyphens
+   * @param {string}   url         endpoint of the webhook
+   * @param {string[]} events      list of events both global and bucket scoped
+   * @param {boolean}  enabled     enable the webhook upon creation
+   * @returns {Promise.<Webhook>}
+   * @throws {CapturooError}
+   */
+  async createWebhook(webhookCode: string, url: string, events: string[], enabled: boolean): Promise<Webhook> {
+    try {
+      const response = await this.post('/webhooks', {
+        accountId: this.claimAccountId,
+        webhookCode,
+        url,
+        events,
+        enabled
+      })
+
+      if (response.status === 201) {
+        const data: WebhookData = await response.json()
+        return new Webhook(this, data)
+      }
+
+      const data = await response.json()
+      throw new CapturooError(response.status, 'unknown-error', data.toString())
+    } catch (err) {
+      throw err
+    }
+  }
 }
 
 class Account {
@@ -399,8 +435,8 @@ class Bucket {
   private _client: CapturooClient
   readonly accountId: string
   readonly bucketId: string
+  readonly bucketCode: string
   readonly bucketName: string
-  readonly resourceName: string
   readonly publicApiKey: string
   readonly created: Date
   readonly modified: Date
@@ -409,9 +445,9 @@ class Bucket {
     this._client = client
     this.accountId = data.accountId
     this.bucketId = data.bucketId
+    this.bucketCode = data.bucketCode
     this.bucketName = data.bucketName
     this.publicApiKey = data.publicApiKey
-    this.resourceName = data.resourceName
     this.created = new Date(data.created)
     this.modified = new Date(data.modified)
   }
@@ -435,8 +471,8 @@ class Bucket {
       object: 'bucket',
       bucketId: this.bucketId,
       accountId: this.accountId,
+      bucketCode: this.bucketCode,
       bucketName: this.bucketName,
-      resourceName: this.resourceName,
       publicApiKey: this.publicApiKey,
       created: this.created.toISOString(),
       modified: this.modified.toISOString()
@@ -451,7 +487,7 @@ class Lead {
 class Webhook {
   private _client: CapturooClient
   readonly webhookId: string
-  readonly code: string
+  readonly webhookCode: string
   readonly events: string[]
   readonly url: string
   readonly enabled: boolean
@@ -461,7 +497,7 @@ class Webhook {
   constructor(client: CapturooClient, data: WebhookData) {
     this._client = client
     this.webhookId = data.webhookId
-    this.code = data.code
+    this.webhookCode = data.webhookCode
     this.events = data.events
     this.url = data.url
     this.enabled = data.enabled
@@ -487,7 +523,7 @@ class Webhook {
     return {
       object: 'bucket',
       webhookId: this.webhookId,
-      code: this.code,
+      webhookCode: this.webhookCode,
       events: this.events,
       url: this.url,
       enabled: this.enabled,

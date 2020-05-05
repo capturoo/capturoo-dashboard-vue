@@ -27,7 +27,7 @@
               color="success"
               class="pr-4 pb-1"
             >mdi-cloud-check-outline</v-icon>
-            <span class="font-weight-light title">{{ bucket.resourceName }}</span>
+            <span class="font-weight-light title">{{ bucket.bucketCode }}</span>
           </v-col>
       </v-row>
 

@@ -18,7 +18,7 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th>Resource name</th>
+              <th>Bucket code</th>
               <th>Bucket name</th>
               <th>Public API Key</th>
               <th>Status</th>
@@ -27,12 +27,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="bucket in buckets" :key="bucket.resourceName">
+            <tr v-for="bucket in buckets" :key="bucket.bucketCode">
               <td>
                 <router-link
                   :to="{ name: 'view-bucket', params: { bucketId: bucket.bucketId }}"
                 >
-                  {{ bucket.resourceName }}
+                  {{ bucket.bucketCode }}
                 </router-link>
               </td>
               <td>{{ bucket.bucketName }}</td>
@@ -59,7 +59,7 @@
                 >
                   <template v-slot:content>
                     <p>You cannot undo this action.</p>
-                    <p>Do you want to delete {{ bucket.resourceName }}?</p>
+                    <p>Do you want to delete {{ bucket.bucketCode }}?</p>
                   </template>
                 </c-confirm-dialog>
               </td>

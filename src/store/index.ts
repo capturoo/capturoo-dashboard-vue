@@ -61,17 +61,23 @@ export default new Vuex.Store({
     setBuckets(state, buckets) {
       state.buckets = buckets
     },
-    setDialogBuckets(state, buckets) {
-      state.dialogBuckets = buckets
+    resetBuckets(state) {
+      state.buckets = null
     },
     addBucket(state, bucket) {
       state.buckets.push(bucket)
+    },
+    setDialogBuckets(state, buckets) {
+      state.dialogBuckets = buckets
     },
     setWebhook(state, webhook) {
       state.webhook = webhook
     },
     setWebhooks(state, webhooks) {
       state.webhooks = webhooks
+    },
+    addWebhook(state, webhook) {
+      state.webhook = webhook
     },
     removeBucket(state, bucketId) {
       function arrayRemove(arr: any, value: string) {
@@ -190,6 +196,15 @@ export default new Vuex.Store({
         const webhooks = await capturoo.admin().getWebhooks()
         commit('setWebhooks', webhooks)
         return webhooks
+      } catch (err) {
+        throw err
+      }
+    },
+    async createWebhook({ commit }, { webhookCode, url, events, enabled }) {
+      try {
+        const webhook = await capturoo.admin().createWebhook(webhookCode, url, events, enabled)
+        commit('addWebhook', webhook)
+        return webhook
       } catch (err) {
         throw err
       }

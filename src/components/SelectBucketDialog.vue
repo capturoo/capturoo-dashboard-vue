@@ -60,7 +60,7 @@
                     <v-icon>mdi-bucket-outline</v-icon>
                   </td>
                   <td>{{ bucket.bucketName }}</td>
-                  <td><span class="grey--text text--darken-2">{{ bucket.resourceName }}</span></td>
+                  <td><span class="grey--text text--darken-2">{{ bucket.bucketCode }}</span></td>
                 </tr>
               </tbody>
             </template>

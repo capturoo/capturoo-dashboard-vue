@@ -58,7 +58,7 @@ export default {
     return {
       drawer: true,
       links: [
-        { icon: 'mdi-bucket-outline', text: 'Buckets', route: { name: 'buckets-overview' }},
+        { icon: 'mdi-pail', text: 'Buckets', route: { name: 'buckets-overview' }},
         { icon: 'mdi-webhook', text: 'Webhooks', route: { name: 'webhooks-overview' }},
         { icon: 'mdi-file-document-outline', text: 'Leads', route: { name: 'leads-overview' }},
         { icon: 'mdi-account-settings', text: 'Account Settings', route: { name: 'account-settings' }}

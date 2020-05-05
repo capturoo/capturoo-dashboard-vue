@@ -27,28 +27,28 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="webhook in webhooks" :key="webhook.code">
+            <tr v-for="w in webhooks" :key="w.webhookCode">
               <td>
                 <router-link
-                  :to="{ name: 'view-webhook', params: { webhookId: webhook.webhookId }}"
+                  :to="{ name: 'view-webhook', params: { webhookId: w.webhookId }}"
                 >
-                  {{ webhook.code }}
+                  {{ w.webhookCode }}
                 </router-link>
               </td>
               <td>
                 <v-icon
-                  v-show="webhook.enabled == true"
+                  v-show="w.enabled == true"
                   color="success"
                 >mdi-webhook</v-icon>
                 <v-icon
-                  v-show="webhook.enabled == false"
+                  v-show="w.enabled == false"
                   color="error"
                 >mdi-webhook</v-icon>
               </td>
-              <td>{{ webhook.url }}</td>
+              <td>{{ w.url }}</td>
               <td>
                 <v-chip
-                  v-for="event in webhook.events"
+                  v-for="event in w.events"
                   :key="event"
                   small
                   class="ml-0 ma-2"
@@ -59,10 +59,10 @@
                     {{ event }}
                 </v-chip>
               </td>
-              <td>{{ webhook.created }}</td>
+              <td>{{ w.created }}</td>
               <td>
                 <c-confirm-dialog
-                  :id="webhook.webhookId"
+                  :id="w.webhookId"
                   icon="mdi-delete"
                   @confirm="deleteConfirm"
                   cancel="Cancel"
@@ -71,7 +71,7 @@
                 >
                   <template v-slot:content>
                     <p>You cannot undo this action.</p>
-                    <p>Do you want to delete {{ webhook.code }}?</p>
+                    <p>Do you want to delete {{ w.webhookCode }}?</p>
                   </template>
                 </c-confirm-dialog>
               </td>
@@ -92,8 +92,9 @@ export default {
   },
   computed: {
     webhooks() {
-      if (this.$store.getters.webhooks) {
-        return this.$store.getters.webhooks.map(v => v.data())
+      const webhooks = this.$store.getters.webhooks
+      if (webhooks) {
+        return webhooks.map(v => v.data())
       }
       return null
     }

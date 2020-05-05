@@ -3,7 +3,7 @@
     <div class="mb-3">
       <router-link :to="{ name: 'webhooks-overview' }">
         <v-btn
-          :disabled="disabled"
+          :disabled="loading"
           text
           class="primary--text float-left pl-0 ml-0">
           <v-icon dark>mdi-arrow-left</v-icon>
@@ -39,15 +39,75 @@
               required
             ></v-text-field>
 
-            <v-btn
-              :disabled="disabled"
-              :loading="loading"
-              @click="createWebhook"
-              class="primary ml-0"
+            <v-combobox
+              v-model="accountEvents"
+              :items="accountScopedEvents"
+              label="Account scoped events"
+              multiple
+              chips
             >
-              Create
-            </v-btn>
-            <v-btn depressed class="ml-4">Cancel</v-btn>
+              <template v-slot:selection="data">
+                <v-chip
+                  :key="JSON.stringify(data.item)"
+                  v-bind="data.attrs"
+                  :input-value="data.selected"
+                  :disabled="data.disabled"
+                  class="ml-0 mt-2 mr-2"
+                  color="primary"
+                  label
+                  close
+                  small
+                  @click:close="data.parent.selectItem(data.item)"
+                >
+                  <v-icon left>mdi-label</v-icon>
+                  {{ data.item }}
+                </v-chip>
+              </template>
+            </v-combobox>
+
+            <v-combobox
+              v-model="bucketEvents"
+              :items="bucketScopedEvents"
+              label="Bucket scoped events"
+              multiple
+              chips
+            >
+              <template v-slot:selection="data">
+                <v-chip
+                  :key="JSON.stringify(data.item)"
+                  v-bind="data.attrs"
+                  :input-value="data.selected"
+                  :disabled="data.disabled"
+                  class="ml-0 mt-2 mr-2"
+                  color="primary"
+                  label
+                  close
+                  small
+                  @click:close="data.parent.selectItem(data.item)"
+                >
+                  <v-icon left>mdi-label</v-icon>
+                  {{ data.item }}
+                </v-chip>
+              </template>
+            </v-combobox>
+
+            <v-switch
+              v-model="enabled"
+              label="Enable webhook"
+              dense
+              ></v-switch>
+
+            <v-btn
+              @click="createWebhook"
+              :disabled="loading"
+              :loading="loading"
+              class="primary ml-0"
+            >Create</v-btn>
+            <v-btn
+              @click="cancel"
+              depressed
+              class="ml-4"
+            >Cancel</v-btn>
           </v-col>
         </v-row>
       </v-form>
@@ -59,7 +119,7 @@
 export default {
   data: () => ({
     loading: false,
-    disabled: false,
+    enabled: true,
     webhookCode: '',
     webhookCodeRules: [
       v => !!v || 'Webhook code is required'
@@ -67,16 +127,57 @@ export default {
     url: '',
     urlRules: [
       v => !!v || 'Secure URL is required'
+    ],
+    accountEvents: [],
+    bucketEvents: [],
+    accountScopedEvents: [
+      'bucket.created',
+      'bucket.deleted'
     ]
   }),
+  beforeMount: async function() {
+    try {
+      this.$store.commit('resetBuckets')
+      await this.$store.dispatch('getBuckets')
+    } catch (err) {
+      throw err
+    }
+  },
+  computed: {
+    bucketScopedEvents() {
+      const buckets = this.$store.getters.buckets
+      if (!buckets) {
+        return []
+      }
+      const bucketScopedEvents = [];
+      buckets.forEach(v => {
+        bucketScopedEvents.push(`lead.created:${v.bucketCode}`)
+      });
+      return bucketScopedEvents
+    }
+  },
   methods: {
-    createWebhook() {
-      this.loading = true
-      this.disabled = true
-      setTimeout(() => {
+    async createWebhook() {
+      try {
+        const events = this.accountEvents.concat(this.bucketEvents);
+        this.loading = true
+        await this.$store.dispatch('createWebhook', {
+          webhookCode: this.webhookCode,
+          url: this.url,
+          events,
+          enabled: this.enabled
+        })
         this.loading = false
         this.$router.replace({ name: 'webhooks-overview' })
-      }, 3000)
+      } catch (err) {
+        this.loading = false
+        throw err
+      } finally {
+        this.loading = false
+      }
+    },
+    cancel() {
+      this.$router.replace({ name: 'webhooks-overview' })
     }
   }
 }
