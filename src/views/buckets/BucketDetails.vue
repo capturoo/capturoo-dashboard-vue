@@ -8,7 +8,7 @@
       </router-link>
       <span class="pb-4 ml-4 title font-weight-light">Bucket details</span>
 
-      <router-link :to="{ name: 'create-bucket' }">
+      <router-link :to="{ name: 'edit-bucket', params: { bucketId: this.$route.params.bucketId } }">
         <v-btn text class="primary--text float-right">
           Edit
           <v-icon left dark class="pl-4">mdi-pencil</v-icon>

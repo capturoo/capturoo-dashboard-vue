@@ -39,6 +39,13 @@ const routes: Array<RouteConfig> = [
         }
       },
       {
+        path: 'buckets/:bucketId/edit',
+        name: 'edit-bucket',
+        components: {
+          dashboard: () => import(/* webpackChunkName: "edit-bucket" */ '../views/buckets/EditBucket.vue')
+        }
+      },
+      {
         path: 'webhooks',
         name: 'webhooks-overview',
         components: {

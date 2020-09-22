@@ -155,6 +155,13 @@ export default new Vuex.Store({
         throw err
       }
     },
+    async updateBucket({ commit }, { bucket, bucketName }) {
+      try {
+        const bucket = await bucket.updateBucket()
+      } catch (err) {
+        throw err
+      }
+    },
     async getBucket({ commit }, { bucketId }) {
       try {
         const bucket = await capturoo.admin().getBucket(bucketId)

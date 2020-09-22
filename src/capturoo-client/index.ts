@@ -157,6 +157,13 @@ class CapturooClient {
     return this.do(url, 'POST', null, body, noAuth);
   }
 
+  async patch(url: string, body: object | null, noAuth?: boolean): Promise<Response> {
+    if (!noAuth) {
+      noAuth = false
+    }
+    return this.do(url, 'PATCH', null, body, noAuth);
+  }
+
   async delete(url: string) : Promise<Response> {
     return this.do(url, 'DELETE', null, null, false);
   }
@@ -450,6 +457,27 @@ class Bucket {
     this.publicApiKey = data.publicApiKey
     this.created = new Date(data.created)
     this.modified = new Date(data.modified)
+  }
+
+  /**
+   * updateBucket updates one more bucket attributes
+   */
+  async update(bucketId: string, attr: any): Promise<Bucket> {
+    try {
+      const body: object = {
+        bucketName: attr.bucketName
+      }
+      const response = await this._client.patch(`/buckets/${bucketId}`, body, true)
+      if (response.status === 200) {
+        const data: BucketData = await response.json()
+        return new Bucket(this._client, data)
+      }
+
+      const data = await response.json()
+      throw new CapturooError(response.status, 'unknown-error', data.toString())
+    } catch (err) {
+      throw err
+    }
   }
 
   async delete(): Promise<void> {
