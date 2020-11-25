@@ -1,4 +1,5 @@
 import 'whatwg-fetch'
+import firebase from 'firebase/app'
 
 interface CapturooClientOptions {
   endpoint?: string

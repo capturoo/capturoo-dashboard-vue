@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import * as firebase from 'firebase/app'
+import firebase from 'firebase/app'
 
 export default {
   data() {

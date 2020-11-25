@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import * as firebase from 'firebase/app'
+import firebase from 'firebase/app'
 import capturoo from '@/capturoo-client'
 
 Vue.use(Vuex)
@@ -157,7 +157,7 @@ export default new Vuex.Store({
     },
     async updateBucket({ commit }, { bucket, bucketName }) {
       try {
-        const bucket = await bucket.updateBucket()
+        const b = await bucket.updateBucket()
       } catch (err) {
         throw err
       }
